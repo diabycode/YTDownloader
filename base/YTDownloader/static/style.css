@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap');
+
+
+:root {
+    --black: #050401;
+    --gray: #B6B6B6;
+    --white: #FDFFFC;
+    --bgGray: #EAEAEC;
+    --red: #ED1C24;
+}
+
+body {
+    background-color: var(--bgGray);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+*, body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+
+/* ------------------------- */
+
+
+main {
+    /* background-color: gray; */
+    height: 70vh;
+    width: 90vw;
+    max-width: 1000px;
+    display: flex;
+}
+
+
+.section {
+    text-align: center;
+    height: 100%;
+    /* width: calc(100%/2); */
+}
+
+
+.section h2 {
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--red);
+    margin-bottom: 45px;
+    /* background-color: aqua; */
+    display: inline-block;
+    margin-left: auto;
+    text-align: left;
+} 
+.section h2 span {
+    color: var(--black);
+    display: block;
+}
+
+
+form input[type=text] {
+    display: block;
+    width: 100%;
+    outline: none;
+    margin-left: auto;
+    margin-right: auto;
+    border: none;
+    background-color: #e6f1f5;
+    padding: 20px;
+    max-width: 600px;
+    margin-bottom: 25px;
+    transition: background-color .3s ease;
+    box-shadow: -6px 20px 15px rgba(0, 0, 0, 0.05);
+}
+form input[type=text]:focus {
+    background-color: var(--white);
+}
+
+form input[type=submit]:active {
+    transform: scale(.95);
+}
+form input[type=submit] {
+    padding: 15px 30px;
+    border: none;
+    background: transparent;
+    background-color: var(--red);
+    color: var(--white);
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: -6px 20px 15px rgba(0, 0, 0, 0.05);
+    transition: color .15s;
+    transition: background-color .15s;
+}
+form input[type=submit]:hover {
+    background-color: var(--white);
+    color: var(--black);
+}
+select {
+    border: 1px solid var(--black);
+    cursor: pointer;
+}
+
+.section.left {
+    width: 100%;
+    
+}
+.section.right.visible {
+    width: 100%;
+    transition: width 5s ease;
+}
+
+
+/* ----- video found */
+.video_found .title {
+    font-weight: 500;
+}
+.video_found .action {
+    display: flex;
+    justify-content: space-between;
+}
+.video_found .action a {
+    background-color: var(--black);
+    padding: 10px 20px;
+    color: var(--white);
+    text-decoration: none;
+
+}
+
+.video_found {
+    text-align: left;
+    margin-left: 100px;
+}
+.video_found img{
+    width: 100%;
+    height: 270px;
+    object-fit: cover;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* ----- loader ----------- */
+.custom-loader.show{
+    display: inline-block!important;
+}
+.custom-loader {
+    display: none;
+    width:50px;
+    height:50px;
+    margin: 40px auto 0px auto;
+    border-radius:50%;
+    padding:1px;
+    background:conic-gradient(#0000 10%,#ED1C24) content-box;
+    -webkit-mask:
+      repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
+      radial-gradient(farthest-side,#0000 calc(100% - 9px),#000 calc(100% - 8px));
+    -webkit-mask-composite: destination-in;
+    mask-composite: intersect;
+    animation:s4 1s infinite steps(10);
+  }
+@keyframes s4 {to{transform: rotate(1turn)}}
+
+@media screen and (max-width: 1080px) {
+    .video_found .content {
+        max-width: 600px;
+        width: 100%;
+    }
+    .video_found img {
+        height: 400px;
+    }
+    .video_found {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        margin-left: 0px;
+        margin-top: 50px;
+    }
+    body {
+        height: auto;
+        padding: 50px 0px;
+    }
+    main {
+        flex-direction: column;
+    }
+    .section.right {
+        margin-top: 30px;
+        padding-bottom: 40px
+    }
+
+    .section {
+        width: 100%;
+        height: auto;
+    }
+}

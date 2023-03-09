@@ -1,0 +1,60 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>YouTubeDownloader</title>
+    <style>
+        img {
+            width: 300px;
+        }
+    </style>
+
+</head>
+<body>
+    <main>
+        <section class="section left">
+            <h2> 
+                Téléchargez
+                <span>
+                    n’importe quelle vidéo YouTube 
+                </span>
+            </h2>
+            <form id="find_form">
+                {% csrf_token %}
+                <input type="text" name="video_url" id="url_input" placeholder="URL VIDEO">
+                <input type="submit" name="submit_btn" id="submit_btn" value="Trouver">
+            </form>
+            <div class="custom-loader"></div>
+
+        </section>
+
+        <section class="section right">
+            <div class="video_found" id="video_found">
+        
+            </div>
+        </section>
+        
+    </main>
+
+    <template id="result_found">
+        <p class="title">video title</p>
+        <img src="#" alt="video thuumbnail">
+
+        <!-- <p class="desc">video description</p> -->
+        <!-- <a href="#">Télécharger</a> -->
+        <div class="action">
+            <select name="res" id="res">
+            </select>
+            <a href="#" download>Télécharger</a>
+        </div>
+    </template>
+
+    <script src="{% static 'main.js' %}"></script>
+    <!-- <script src="https://unpkg.com/htmx.org@1.8.6" integrity="sha384-Bj8qm/6B+71E6FQSySofJOUjA/gq330vEqjFx9LakWybUySyI1IQHwPtbTU7bNwx" crossorigin="anonymous"></script> -->
+</body>
+</html>
