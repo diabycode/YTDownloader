@@ -1,22 +1,22 @@
-from django.http import HttpResponse, JsonResponse, FileResponse
-from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
+import json
+import shutil
+
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
 
 from YTDownloader import app_utils
 from YTDownloader import settings
 
-import json
-from pathlib import Path
-import shutil
 
-def home(request):
+
+def home(request) -> HttpResponse:
     if (settings.BASE_DIR/"files").exists():
         shutil.rmtree(path=str(settings.BASE_DIR/"files"))
     
     return render(request, "index.html", context={})
 
 
-def download(request, video_id, itag):
+def download(request, video_id, itag) -> HttpResponse:
     """ Download video and return a FileResponse
     """
     if (settings.BASE_DIR/"files").exists():
@@ -43,12 +43,11 @@ def download(request, video_id, itag):
     return response
 
 
-def videofinder(request):
+def videofinder(request, video_id) -> JsonResponse:
     """ Find video and return informations trough JsonResponse
     
         data: {
             title: ...
-            desc: ...
             length: ...
             thumb_url: ...
         }
@@ -56,8 +55,8 @@ def videofinder(request):
     if (settings.BASE_DIR/"files").exists():
         shutil.rmtree(path=str(settings.BASE_DIR/"files"))
 
-    body = json.loads(request.body)
-    url = body.get("url")
+    base_url = 'https://www.youtube.com/watch?v='
+    url = base_url + video_id
     
     object = app_utils.YouTube(url)
     res_list = [
@@ -72,7 +71,6 @@ def videofinder(request):
 
     object_infos = {
         "title": object.title,
-        "desc": object.description,
         "length": object.length,
         "thumb_url": object.thumbnail_url,
         "video_id": object.video_id,

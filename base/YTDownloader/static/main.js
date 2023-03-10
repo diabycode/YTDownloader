@@ -1,119 +1,232 @@
-video_find_form = document.querySelector("#find_form")
-url_input = document.querySelector("#url_input")
-csrf_token_input = document.querySelector("input[type=hidden") 
-let resSelectedItag = "22"
+
+const url_input = document.querySelector("#url_input")
+const video_find_form = document.querySelector("#find_form")
+let downloadLink = ""
 
 
 /**
- * function that cut a long text
- * @param {String} text 
+ * Update the download link
+ * @param {String} videoId
+ * @param {String} itag
  */
-function truncateText (text) {
-    let newText = text
-
-    const text_splited = text.split(" ")
-    if (text_splited.length > 25) {
-        newText = (text_splited.slice(0, 26)).join(" ") + "..."
-    }
-    return newText
-}
-
-
-function updateDownloadLink (videoId) {
+function updateDownloadLink (videoId, itag) {
     const baseUrl = '/download/'
-    const url = baseUrl + videoId + "/" + resSelectedItag + "/"
-    const downloadLinkElement = document.querySelector("#video_found a")
-    downloadLinkElement.setAttribute("href", url)
-}
-function clearLoader () {
-    document.querySelector(".custom-loader").classList.remove("show")
+    downloadLink = baseUrl + videoId + "/" + itag + "/"
+    // const downloadLinkElement = document.querySelector("#video_found a")
+    // downloadLinkElement.setAttribute("href", url)
 }
 
-function loading () {
-    document.querySelector(".custom-loader").classList.add("show")
+
+/**
+ * Create a HTML element with attributes given in an object
+ * @param {String} tag
+ * @param {Object} attributes
+ * @returns {HTMLElement} element
+ */
+function createNode (tag, attributes) {
+    const element = document.createElement(tag)
+    for (const key in attributes) {
+        element.setAttribute(key, attributes[key])
+    }
+    return element
+}
+
+
+/**
+ * get video id from url
+ * @param {String} url YouTube video url 
+ * @returns {String} video id
+ */
+function get_video_id(url) {
+    return (url.split("/")).slice(-1)[0].split("=").slice(-1)[0]
+}
+
+
+/**
+ * let create YouTube video type
+ * @typedef {Object} YouTubeVideo 
+ * @property {String} title : title of the video
+ * @property {String} length :  length of the video
+ * @property {String} thumb_url : url the video thumbnail
+ * @property {String} video_id : id of the video
+ * @property {String} res_list : list of the video resolutions
+ */
+
+
+/**
+ * Fetch video informations from server
+ * @param {String} url YouTube video url
+ * @returns {Promise} 
+ */
+async function fetchVideo (url) {
+    // show loader
+    showLoader(document.querySelector(".section.left"), {
+        "width": "30px",
+        "height": "30px",
+        "margin": "auto",
+    })
+
+    const video_id = get_video_id(url)
+
+    response = await fetch(`/videofinder/${video_id}`, {
+        method: "GET",
+        headers: {"Accept": "application/json",}
+    })
+    if (response.ok) {
+        return response.json()
+    }
 }
 
 /**
- * @param {String} url 
+ * get video with informations given
+ * @param {Object} video informations
+ * @returns {YouTubeVideo} video object
  */
-async function get_video (url) {
-    loading()
-    fetch("/videofinder/", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrf_token_input.value,
-            },
+function getVideoObject(informations) {
+    return {
+        title: informations.title,
+        length: informations.length,
+        thumb_url: informations.thumb_url,
+        video_id: informations.video_id,
+        res_list: informations.res_list
+    }
+}
 
-            body: JSON.stringify({
-                url: url
-            })
-        }
+
+/** 
+ * Show video informations in DOM
+ * @param {YouTubeVideo} video
+ * @param {HTMLElement} container
+ * return {HTMLElement} video node
+ */
+function showVideoInDOM (video, container) {
+    // get template
+    const videoNode = createNode("div", {"class": "content"})
+    videoNode.appendChild(
+        document.querySelector("#result_found").content.cloneNode(true)
     )
-        .then(r => {
-            if (r.ok) {
-                clearLoader()
-                return r.json()
-            }
-        })
-        .then (video => {
-            
-            // console.log(video.title)
-            const result_container = document.querySelector("#video_found") 
 
-            const result_node = document.querySelector("#result_found").content.cloneNode(true)
-            result_node.querySelector("img").setAttribute("src", video.thumb_url)
-            result_node.querySelector(".title").innerText = video.title
-            // result_node.querySelector(".desc").innerText = truncateText(video.desc)
- 
-            // resolutions
-            const resContainerElement = result_node.querySelector("#res")
-            video.res_list.forEach(element => {
-                option = document.createElement("option")
-                option.setAttribute("value", element.itag)
+    // set video informations
+    videoNode.querySelector(".title").innerText = video.title
+    videoNode.querySelector("img").setAttribute("src", video.thumb_url)
 
-                res = element.mime_type + " - "
-                if (element.res) {
-                    res += element.res
-                } else {
-                    res += element.abr
-                }
-                option.innerText = res
+    // get video resolutions
+    const resContainerElement = videoNode.querySelector("#res")
+    video.res_list.forEach(element => {
+        const option = document.createElement("option")
+        option.setAttribute("value", element.itag)
+        option.innerText = element.mime_type + " - " + element.res
+        resContainerElement.appendChild(option)
+    })
 
-                if (element.itag === 22) {
-                    option.setAttribute("selected", "")
-                }
-                resContainerElement.appendChild(option)
-            });
+    // add to container
+    container.innerHTML = ""
+    container.appendChild(videoNode)
+    return videoNode
+}
 
-            
+/**
+ * Create and show a loader in DOM
+ * @param {HTMLElement} container where the loader will be added
+ * @param {Object} styles styles of the loader
+ */
+function showLoader (container, styles) {
+    const loader = createNode("div", {"class": "custom-loader"})
 
-            const content = document.createElement("div")
-            content.setAttribute("class", "content")
-            content.appendChild(result_node)
+    // set styles
+    for (const key in styles) {
+        loader.style[key] = styles[key]
+    }
 
-            // add to container
-            if (result_container.firstElementChild) {
-                result_container.removeChild(result_container.firstElementChild);
-            }
-            result_container.appendChild(content)
+    container.appendChild(loader)
+}
 
-            // show result section
-            document.querySelector("main section:last-child").classList.add("visible")
+/**
+ * clear the loader in DOM
+ * @param {HTMLElement} container where the loader will be removed
+ */
+function clearLoader (container) {
+    container.removeChild(container.querySelector(".custom-loader"))
+}
 
-            // download link
-            updateDownloadLink(video.video_id)
 
-            resContainerElement.addEventListener("change", (event) => {
-                resSelectedItag = resContainerElement.value
-                updateDownloadLink(video.video_id)
-            })
-        })
-}  
+/**
+ * Proceed to download the video
+ * @param {String} downloadUrl
+ */
+async function downloadVideo (downloadUrl) {
+
+    // show loader
+    showLoader(document.querySelector(".action"), {
+        "width": "20px",
+        "height": "20px",
+    })
+
+    const r = await fetch(downloadUrl, {
+        method: "GET",
+        headers: {"Accept": "video/mp4",}
+    })
+
+    if (r.ok) {
+        return r.blob()
+    }
+}
+
+
+// ------------------- main ---------------
+
+
+// video getting listener
 video_find_form.addEventListener("submit", (event) => {
     event.preventDefault()
-    get_video(url_input.value) 
+
+    const url = url_input.value
+    fetchVideo(url)
+        .then(video_infos => {
+            // hide loader
+            clearLoader(document.querySelector(".section.left"))
+
+            const video = getVideoObject(video_infos)
+
+            const container = document.querySelector("#video_found")
+            showVideoInDOM(video, container)
+
+            // show right section 
+            document.querySelector(".section.right").style.display = "block"
+
+
+            // update download link
+            updateDownloadLink(video.video_id, document.querySelector("#res").value)
+
+            // listen to the change event of the resolution select to update the download link
+            document.querySelector("#res").addEventListener("change", (event) => {
+                event.preventDefault()
+                
+                const itag = document.querySelector("#res").value
+                updateDownloadLink(get_video_id(url_input.value), itag)
+            })
+
+            // listen to the click event of the download button
+            document.querySelector("#download-btn").addEventListener("click", (event) => {
+                event.preventDefault()
+
+                downloadVideo(downloadLink)
+                    .then(blob => {
+                        var url = URL.createObjectURL(blob);
+                        var link = createNode("a", {
+                            "href": url,
+                            "download": `${video.title}.mp4`
+                        })
+
+                        // hide loader
+                        clearLoader(document.querySelector(".action"))
+
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    })
+            })
+        })
 })
 
 

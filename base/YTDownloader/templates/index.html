@@ -8,12 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <title>YouTubeDownloader</title>
-    <style>
-        img {
-            width: 300px;
-        }
-    </style>
-
 </head>
 <body>
     <main>
@@ -29,7 +23,6 @@
                 <input type="text" name="video_url" id="url_input" placeholder="URL VIDEO">
                 <input type="submit" name="submit_btn" id="submit_btn" value="Trouver">
             </form>
-            <div class="custom-loader"></div>
 
         </section>
 
@@ -45,16 +38,13 @@
         <p class="title">video title</p>
         <img src="#" alt="video thuumbnail">
 
-        <!-- <p class="desc">video description</p> -->
-        <!-- <a href="#">Télécharger</a> -->
         <div class="action">
             <select name="res" id="res">
             </select>
-            <a href="#" download>Télécharger</a>
+            <a id="download-btn">Télécharger</a>
         </div>
     </template>
 
     <script src="{% static 'main.js' %}"></script>
-    <!-- <script src="https://unpkg.com/htmx.org@1.8.6" integrity="sha384-Bj8qm/6B+71E6FQSySofJOUjA/gq330vEqjFx9LakWybUySyI1IQHwPtbTU7bNwx" crossorigin="anonymous"></script> -->
 </body>
 </html>
