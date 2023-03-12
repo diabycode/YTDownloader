@@ -40,7 +40,7 @@ def download(video, stream, output_path):
 
         # merging
         filename = stream.title + "_" + stream.resolution + ".mp4"
-        filename = filename.replace("|", "-").replace("/", "-")
+        filename = filename.replace("|", "-").replace("/", "-").replace("\"", "")
         file = merge_unprogressive_files(
             video_file,
             audio_file,
